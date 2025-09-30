@@ -1,0 +1,48 @@
+# Discussion: Benefits and Constraints of a Fixed Schema
+
+## Benefits
+
+- **Data Integrity**
+  - Foreign keys enforce valid references between tables (no orphaned rows).
+  - Constraints (NOT NULL, UNIQUE, CHECK) prevent invalid data from entering the system.
+  - Transactions guarantee atomic updates — balances and transactions stay in sync.
+
+- **Normalization**
+  - Avoids data duplication (e.g., account owner names stored only once).
+  - Eliminates update anomalies — changing a customer’s name doesn’t require editing multiple tables.
+  - Easier long-term maintenance as data is structured around relationships.
+
+- **Query Power**
+  - JOINs allow combining multiple entities into one view of data (e.g., account + transaction history).
+  - SQL optimizers leverage indexes and constraints to execute queries efficiently.
+
+- **Clarity**
+  - Schema provides a clear contract: tables, columns, and relationships are explicitly defined.
+  - Easier for developers and analysts to understand and reason about the data model.
+
+---
+
+## Constraints
+
+- **Schema Rigidity**
+  - Adding new attributes or relationships requires schema migrations.
+  - Downtime or versioning strategies may be necessary for production systems.
+
+- **Performance Costs**
+  - Complex JOINs on large tables can be expensive.
+  - Requires indexing and careful query design to scale effectively.
+
+- **Upfront Design**
+  - Must explicitly model relationships and constraints in advance.
+  - Slower for rapidly changing requirements compared to schemaless (NoSQL) databases.
+
+- **Operational Overhead**
+  - Database administrators and developers must coordinate schema changes.
+  - Continuous integration pipelines need migration management.
+
+---
+
+## Summary
+
+A **fixed schema** ensures **high integrity and normalized data**, which is excellent for consistency and maintainability.  
+However, it introduces **rigidity** and **migration overhead**, and JOIN-heavy workloads may face **performance challenges** without careful optimization.
