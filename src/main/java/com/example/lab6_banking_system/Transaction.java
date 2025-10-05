@@ -1,9 +1,11 @@
 package com.example.lab6_banking_system;
 
 import jakarta.persistence.*;
+import org.springframework.context.annotation.Profile;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
+@Profile("!nosql")
 @Entity
 public class Transaction {
     @Id
