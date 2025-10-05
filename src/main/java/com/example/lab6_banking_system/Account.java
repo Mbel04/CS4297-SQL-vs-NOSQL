@@ -1,8 +1,10 @@
 package com.example.lab6_banking_system;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
+import org.springframework.context.annotation.Profile;
 
+import java.math.BigDecimal;
+@Profile("!nosql")
 @Entity
 public class Account {
     @Id

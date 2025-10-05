@@ -1,10 +1,11 @@
 package com.example.lab6_banking_system;
 
 import com.example.lab6_banking_system.BankingService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-
+@Profile("!nosql")
 @RestController
 @RequestMapping("/api/bank")
 public class BankingController {
