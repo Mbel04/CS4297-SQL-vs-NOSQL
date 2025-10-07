@@ -1,48 +1,48 @@
 package com.example.lab6_banking_system;
 
-import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
-@Profile("nosql")
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/nosql")
 public class NoSqlController {
-    private final UserSettingsRepository userRepo;
-    private final SensorReadingRepository sensorRepo;
 
-    public NoSqlController(UserSettingsRepository u, SensorReadingRepository s) {
-        this.userRepo = u; this.sensorRepo = s;
+    private final UserSettingsService userSettingsService;
+    private final SensorReadingService sensorReadingService;
+
+    public NoSqlController(UserSettingsService userSettingsService,
+                           SensorReadingService sensorReadingService) {
+        this.userSettingsService = userSettingsService;
+        this.sensorReadingService = sensorReadingService;
     }
 
-    // --- User settings (flexible map) ---
-    @PutMapping("/usersettings/{userId}")
-    public String saveUserSettings(@PathVariable String userId, @RequestBody Map<String,String> prefs) {
-        userRepo.put(userId, prefs);
-        return "Saved";
+
+    @PostMapping("/user-settings")
+    public ResponseEntity<UserSettings> saveUserSettings(@RequestBody UserSettings settings) {
+        UserSettings saved = userSettingsService.save(settings);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/usersettings/{userId}")
-    public Map<String,Object> getUserSettings(@PathVariable String userId) {
-        return userRepo.get(userId).orElse(null);
+    @GetMapping("/user-settings/{userId}")
+    public ResponseEntity<UserSettings> getUserSettings(@PathVariable String userId) {
+        Optional<UserSettings> settings = userSettingsService.findById(userId);
+        return settings.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // --- Sensor readings (time-series) ---
-    @PostMapping("/sensors/{deviceId}/readings")
-    public String addReading(@PathVariable String deviceId,
-                             @RequestParam(required=false) String ts,
-                             @RequestBody Map<String,String> payload) {
-        String when = ts == null ? DateTimeFormatter.ISO_INSTANT.format(Instant.now()) : ts;
-        sensorRepo.put(deviceId, when, payload);
-        return "Recorded";
+
+    @PostMapping("/sensor-readings")
+    public ResponseEntity<SensorReading> saveSensorReading(@RequestBody SensorReading reading) {
+        SensorReading saved = sensorReadingService.save(reading);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/sensors/{deviceId}/readings")
-    public List<Map<String,Object>> readingsSince(@PathVariable String deviceId,
-                                                  @RequestParam String since) {
-        return sensorRepo.since(deviceId, since);
+    @GetMapping("/sensor-readings/{deviceId}")
+    public ResponseEntity<List<SensorReading>> getReadingsByDevice(@PathVariable String deviceId) {
+        List<SensorReading> readings = sensorReadingService.findByDeviceId(deviceId);
+        return ResponseEntity.ok(readings);
     }
 }
-
